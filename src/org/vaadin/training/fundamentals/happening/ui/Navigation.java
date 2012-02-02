@@ -6,5 +6,5 @@ public interface Navigation {
 
     public void setViews(Views views);
     
-    public VaadinView<?> setCurrentView(Class<?> type, Map<String, Object> params);
+    public VaadinView<?> setCurrentView(Class<?> type, Map<String, String> params);
 }

@@ -1,13 +1,16 @@
 package org.vaadin.training.fundamentals.happening;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.vaadin.training.fundamentals.happening.domain.AppData;
-import org.vaadin.training.fundamentals.happening.domain.HasCookie;
 import org.vaadin.training.fundamentals.happening.domain.entity.DomainUser;
 import org.vaadin.training.fundamentals.happening.domain.impl.DomainUtils;
+import org.vaadin.training.fundamentals.happening.ui.AppData;
+import org.vaadin.training.fundamentals.happening.ui.ApplicationWithServices;
 import org.vaadin.training.fundamentals.happening.ui.NavigationComponent;
 import org.vaadin.training.fundamentals.happening.ui.VaadinView;
 import org.vaadin.training.fundamentals.happening.ui.ViewProvider;
@@ -21,13 +24,17 @@ import org.vaadin.training.fundamentals.happening.ui.list.ListHappeningsView;
 import com.vaadin.Application;
 import com.vaadin.terminal.gwt.server.HttpServletRequestListener;
 import com.vaadin.ui.*;
+import com.vaadin.ui.UriFragmentUtility.FragmentChangedEvent;
+import com.vaadin.ui.UriFragmentUtility.FragmentChangedListener;
 
 public class HappeningApplication extends Application implements
-        HttpServletRequestListener, HasCookie {
+        HttpServletRequestListener, ApplicationWithServices, FragmentChangedListener {
     private static final long serialVersionUID = 1L;
     private NavigationComponent navigation;
     private HttpServletRequest request;
     private HttpServletResponse response;
+    private UriFragmentUtility uriFragmentUtility;
+    private Map<String, Class<?>> fragmentViewMap = new HashMap<String, Class<?>>();
 
     @Override
     public void init() {
@@ -41,11 +48,14 @@ public class HappeningApplication extends Application implements
         setMainWindow(mainWindow);
         navigation = new NavigationComponent();
         registerViewProviders(navigation);
+        uriFragmentUtility = new UriFragmentUtility();
+        uriFragmentUtility.addListener(this);
         mainWindow.setContent(navigation);
+        mainWindow.addComponent(uriFragmentUtility);
         navigation.setCurrentView(EditHappeningView.class, null);
     }
     
-    private static void registerViewProviders(NavigationComponent mainLayout) {
+    private void registerViewProviders(NavigationComponent mainLayout) {
         Views views = new ViewsImpl();
         views.addProvider(ListHappeningsView.class, new ViewProvider() {
             public VaadinView<?> newView() {
@@ -57,6 +67,8 @@ public class HappeningApplication extends Application implements
                 return new EditHappeningViewImpl();
             }
         });
+        fragmentViewMap.put(EditHappeningView.class.getSimpleName(), EditHappeningView.class);
+        fragmentViewMap.put(ListHappeningsView.class.getSimpleName(), EditHappeningView.class);
         mainLayout.setViews(views);
     }
 
@@ -106,4 +118,28 @@ public class HappeningApplication extends Application implements
             response.addCookie(cookie);
         }
     }
+
+    @Override
+    public UriFragmentUtility getUriFragmentUtility() {
+        return uriFragmentUtility;
+    }
+    
+    /**
+     * Client has changed the fragment in the browser.
+     */
+    @Override
+    public void fragmentChanged(FragmentChangedEvent source) {
+            String fragment = source.getUriFragmentUtility().getFragment();
+            if (fragment.isEmpty()) {
+                    // Figure out why Vaadin sets empty string after login
+                    return;
+            }
+            Class<?> viewType = fragmentViewMap.get(NavigationComponent.parseFragmentView(fragment));
+            Map<String, String> params = NavigationComponent.parseFragmentParams(fragment);
+            if (viewType != null) {
+                navigation.setCurrentView(viewType, params);
+            } else {
+                throw new RuntimeException("Fragment " + fragment + " is not of View.");
+            }
+    }    
 }

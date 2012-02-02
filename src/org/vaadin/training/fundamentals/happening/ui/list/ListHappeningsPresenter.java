@@ -5,9 +5,9 @@ import java.util.List;
 
 import com.vaadin.data.util.BeanItemContainer;
 
-import org.vaadin.training.fundamentals.happening.domain.AppData;
 import org.vaadin.training.fundamentals.happening.domain.entity.DomainUser;
 import org.vaadin.training.fundamentals.happening.domain.entity.Happening;
+import org.vaadin.training.fundamentals.happening.ui.AppData;
 
 public class ListHappeningsPresenter {
 

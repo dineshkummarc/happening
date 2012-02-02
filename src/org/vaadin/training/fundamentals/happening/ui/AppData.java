@@ -1,9 +1,12 @@
-package org.vaadin.training.fundamentals.happening.domain;
+package org.vaadin.training.fundamentals.happening.ui;
 
+import org.vaadin.training.fundamentals.happening.domain.Domain;
+import org.vaadin.training.fundamentals.happening.domain.Domains;
 import org.vaadin.training.fundamentals.happening.domain.entity.DomainUser;
 
 import com.vaadin.Application;
 import com.vaadin.service.ApplicationContext.TransactionListener;
+import com.vaadin.ui.UriFragmentUtility;
 
 public class AppData implements TransactionListener {
     
@@ -52,15 +55,23 @@ public class AppData implements TransactionListener {
     
     public static void setUserCookie() {
         Application app = instance.get().app;
-        if (app instanceof HasCookie) {
-            ((HasCookie)app).setCookie(instance.get().user.getHash());
+        if (app instanceof ApplicationWithServices) {
+            ((ApplicationWithServices)app).setCookie(instance.get().user.getHash());
         }
     }
     
     public static void clearUserCookie() {
         Application app = instance.get().app;
-        if (app instanceof HasCookie) {
-            ((HasCookie)app).clearCookie();
+        if (app instanceof ApplicationWithServices) {
+            ((ApplicationWithServices)app).clearCookie();
         }        
+    }
+    
+    public static UriFragmentUtility getUriFragmentUtility() {
+        Application app = instance.get().app;
+        if (app instanceof ApplicationWithServices) {
+            return ((ApplicationWithServices)app).getUriFragmentUtility();
+        }
+        return null;
     }
 }

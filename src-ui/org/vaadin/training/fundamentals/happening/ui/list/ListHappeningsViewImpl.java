@@ -18,7 +18,7 @@ public class ListHappeningsViewImpl implements ListHappeningsView<VerticalLayout
     private Navigation navigation;
     private ListHappeningsPresenter presenter;
     
-    public void init(Navigation navigation, Map<String, Object> params) {
+    public void init(Navigation navigation, Map<String, String> params) {
         presenter = new ListHappeningsPresenter(this);
         this.navigation = navigation;
         layout = new VerticalLayout();
@@ -33,7 +33,7 @@ public class ListHappeningsViewImpl implements ListHappeningsView<VerticalLayout
         return layout;
     }
 
-    public <T extends VaadinView<?>> void navigateTo(Class<T> view, Map<String, Object> params) {
+    public <T extends VaadinView<?>> void navigateTo(Class<T> view, Map<String, String> params) {
         navigation.setCurrentView(view, params);
     }
 

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.vaadin.training.fundamentals.happening.domain.entity.Happening;
 import org.vaadin.training.fundamentals.happening.ui.Navigation;
+import org.vaadin.training.fundamentals.happening.ui.PresenterInitFailedException;
 import org.vaadin.training.fundamentals.happening.ui.VaadinView;
 import org.vaadin.training.fundamentals.happening.ui.ViewEventRouter;
 
@@ -44,10 +45,14 @@ public class EditHappeningViewImpl implements EditHappeningView<VerticalLayout>,
         presenter = new EditHappeningPresenter(this);
     }
     
-    public void init(Navigation navigation, Map<String, Object> params) {
+    public void init(Navigation navigation, Map<String, String> params) {
         this.navigation = navigation;
         buildLayout();
-        presenter.init(params);
+        try {
+            presenter.init(params);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
     public VerticalLayout getViewContent() {
@@ -130,7 +135,7 @@ public class EditHappeningViewImpl implements EditHappeningView<VerticalLayout>,
     }
 
     public <T extends VaadinView<?>> void navigateTo(Class<T> view,
-            Map<String, Object> params) {
+            Map<String, String> params) {
         navigation.setCurrentView(view, params);
     }
 }

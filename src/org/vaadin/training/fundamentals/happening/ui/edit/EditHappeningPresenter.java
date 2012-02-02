@@ -2,10 +2,11 @@ package org.vaadin.training.fundamentals.happening.ui.edit;
 
 import java.util.Map;
 
-import org.vaadin.training.fundamentals.happening.domain.AppData;
 import org.vaadin.training.fundamentals.happening.domain.entity.DomainUser;
 import org.vaadin.training.fundamentals.happening.domain.entity.Happening;
 import org.vaadin.training.fundamentals.happening.domain.impl.DomainUtils;
+import org.vaadin.training.fundamentals.happening.ui.AppData;
+import org.vaadin.training.fundamentals.happening.ui.PresenterInitFailedException;
 import org.vaadin.training.fundamentals.happening.ui.edit.EditHappeningView.ItemSavedEvent;
 import org.vaadin.training.fundamentals.happening.ui.edit.EditHappeningView.ItemSavedListener;
 import org.vaadin.training.fundamentals.happening.ui.edit.EditHappeningView.SaveCanceledEvent;
@@ -25,11 +26,15 @@ public class EditHappeningPresenter implements EditHappeningView.ItemSavedListen
         view.addListener((SaveCanceledListener)this);
     }
     
-    public void init(Map<String, Object> params) {
+    public void init(Map<String, String> params) throws PresenterInitFailedException {
         if (params != null) {
-            Long id = (Long)params.get("id");
+            Long id = Long.valueOf(params.get("id"));
             Happening happening = AppData.getDomain().find(Happening.class, id);
-            view.setDatasource(new BeanItem<Happening>(happening));
+            if (happening != null) {
+                view.setDatasource(new BeanItem<Happening>(happening));
+            } else {
+                throw new PresenterInitFailedException("Cannot find entity with id: " + id);
+            }
         } else {
             view.setDatasource(new BeanItem<Happening>(new Happening()));
         }

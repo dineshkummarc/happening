@@ -7,9 +7,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.UUID;
 
-import org.vaadin.training.fundamentals.happening.domain.AppData;
 import org.vaadin.training.fundamentals.happening.domain.entity.DomainUser;
 import org.vaadin.training.fundamentals.happening.domain.entity.Happening;
+import org.vaadin.training.fundamentals.happening.ui.AppData;
 
 public class DomainUtils {
 
