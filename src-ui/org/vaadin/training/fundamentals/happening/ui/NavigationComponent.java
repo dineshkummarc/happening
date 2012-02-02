@@ -4,16 +4,24 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.vaadin.training.fundamentals.happening.ui.edit.AddNewView;
+import org.vaadin.training.fundamentals.happening.ui.list.ListHappeningsView;
+
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Button.ClickEvent;
 
 public class NavigationComponent extends VerticalLayout implements Navigation {
 
     private static final long serialVersionUID = 1L;
 
     private VaadinView<?> activeView;
+    private Class<?> activeViewType;
 
     private Views views;
 
@@ -21,38 +29,66 @@ public class NavigationComponent extends VerticalLayout implements Navigation {
         buildLayout();
     }
 
+    @SuppressWarnings("serial")
     private void buildLayout() {
         HorizontalLayout header = new HorizontalLayout();
         header.setWidth("100%");
         header.setHeight("50px");
         Label appName = new Label("Happening Application Header");
         header.addComponent(appName);
+        NativeButton listButton = new NativeButton("List");
+        listButton.addListener(new ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                setCurrentView(ListHappeningsView.class, null);
+            }
+        });
+        
+        NativeButton addButton = new NativeButton("Add");
+        addButton.addListener(new ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                setCurrentView(AddNewView.class, null);
+            }
+        });        
+        
+        NativeButton logoutButton = new NativeButton("Logout");
+        listButton.addListener(new ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                
+            }
+        });
+        header.addComponent(listButton);
+        header.addComponent(addButton);
+        header.addComponent(logoutButton);
         addComponent(header);
     }
 
     public VaadinView<?> setCurrentView(Class<?> type, Map<String, String> params) {
-        if (activeView != null && activeView.getClass().equals(type)) {
-            // do nothing, since requested view already active
+        if (activeView != null && activeViewType.equals(type)) {
+            // do nothing, since requested viewMock already active
             return activeView;
         }
 
         try {
-            // Create new view
+            // Create new viewMock
             VaadinView<?> newView = views.newInstance(type);
 
-            // Initialize selected view (once)
+            // Initialize selected viewMock (once)
             newView.init(this, params);
 
             Component newContent = newView.getViewContent();
 
-            // Remove current view if one exists
+            // Remove current viewMock if one exists
             if (activeView != null) {
                 removeComponent(activeView.getViewContent());
             }
 
             activeView = newView;
+            activeViewType = type;
 
-            // Add new view
+            // Add new viewMock
             addComponent(newContent);
             setExpandRatio(newContent, 1.0f);
             

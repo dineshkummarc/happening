@@ -16,6 +16,7 @@ import org.vaadin.training.fundamentals.happening.ui.VaadinView;
 import org.vaadin.training.fundamentals.happening.ui.ViewProvider;
 import org.vaadin.training.fundamentals.happening.ui.Views;
 import org.vaadin.training.fundamentals.happening.ui.ViewsImpl;
+import org.vaadin.training.fundamentals.happening.ui.edit.AddNewView;
 import org.vaadin.training.fundamentals.happening.ui.edit.EditHappeningViewImpl;
 import org.vaadin.training.fundamentals.happening.ui.edit.EditHappeningView;
 import org.vaadin.training.fundamentals.happening.ui.list.ListHappeningsViewImpl;
@@ -51,6 +52,7 @@ public class HappeningApplication extends Application implements
         uriFragmentUtility = new UriFragmentUtility();
         uriFragmentUtility.addListener(this);
         mainWindow.setContent(navigation);
+        navigation.setSizeFull();
         mainWindow.addComponent(uriFragmentUtility);
         navigation.setCurrentView(EditHappeningView.class, null);
     }
@@ -67,8 +69,14 @@ public class HappeningApplication extends Application implements
                 return new EditHappeningViewImpl();
             }
         });
+        views.addProvider(AddNewView.class, new ViewProvider() {
+            public VaadinView<?> newView() {
+                return new EditHappeningViewImpl();
+            }
+        });
         fragmentViewMap.put(EditHappeningView.class.getSimpleName(), EditHappeningView.class);
-        fragmentViewMap.put(ListHappeningsView.class.getSimpleName(), EditHappeningView.class);
+        fragmentViewMap.put(ListHappeningsView.class.getSimpleName(), ListHappeningsView.class);
+        fragmentViewMap.put(AddNewView.class.getSimpleName(), AddNewView.class);
         mainLayout.setViews(views);
     }
 

@@ -2,7 +2,6 @@ package org.vaadin.training.fundamentals.happening.domain.entity;
 
 import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
@@ -11,7 +10,7 @@ import javax.persistence.TemporalType;
 @Entity
 public class Happening extends AbstractEntity {
 
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE } )
+    @ManyToOne
     private DomainUser owner;
     private String title;
     @Temporal(TemporalType.DATE)

@@ -55,6 +55,7 @@ public class EditHappeningPresenter implements EditHappeningView.ItemSavedListen
             if (currentUser == null) {
                 currentUser = DomainUtils.createUser();
                 setCookie = true;
+                currentUser = AppData.getDomain().store(currentUser);
             }
             currentUser.getHappenings().add(happening);
             happening.setOwner(currentUser);
@@ -67,5 +68,6 @@ public class EditHappeningPresenter implements EditHappeningView.ItemSavedListen
             
         view.showSaveSuccess();
         view.setDatasource(new BeanItem<Happening>(happening));
+        view.navigateTo(ListHappeningsView.class, null);
     }
 }

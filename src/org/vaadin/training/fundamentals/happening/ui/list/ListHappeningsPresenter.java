@@ -1,13 +1,17 @@
 package org.vaadin.training.fundamentals.happening.ui.list;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.vaadin.data.util.BeanItemContainer;
 
-import org.vaadin.training.fundamentals.happening.domain.entity.DomainUser;
 import org.vaadin.training.fundamentals.happening.domain.entity.Happening;
 import org.vaadin.training.fundamentals.happening.ui.AppData;
+import org.vaadin.training.fundamentals.happening.ui.edit.EditHappeningView;
+import org.vaadin.training.fundamentals.happening.ui.list.ListHappeningsView.ItemOpenEvent;
+import org.vaadin.training.fundamentals.happening.ui.list.ListHappeningsView.ItemOpenListener;
 
 public class ListHappeningsPresenter {
 
@@ -18,14 +22,25 @@ public class ListHappeningsPresenter {
     }
     
     public void init() {
+        view.addListener(itemOpenListener);
         BeanItemContainer<Happening> container = new BeanItemContainer<Happening>(Happening.class);
-//        BeanItemContainer<DomainUser> container = new BeanItemContainer<DomainUser>(DomainUser.class);
         if (AppData.getCurrentUser() != null) {
             List<Happening> happenings = AppData.getDomain().list(Happening.class, "SELECT h FROM Happening h WHERE h.owner = :owner", Collections.singletonMap("owner", (Object) AppData.getCurrentUser()));
-//            List<DomainUser> happenings = AppData.getDomain().list(DomainUser.class);
             container.addAll(happenings);
             container.addNestedContainerProperty("owner.hash");
         }
         view.setDatasource(container);
     }
+    
+    private final ItemOpenListener itemOpenListener = new ItemOpenListener() {
+        
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public void itemOpen(ItemOpenEvent event) {
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("id", String.valueOf(event.getBean().getId()));
+            view.navigateTo(EditHappeningView.class, params);
+        }
+    };
 }

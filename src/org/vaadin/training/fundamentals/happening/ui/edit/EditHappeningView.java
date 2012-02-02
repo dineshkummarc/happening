@@ -8,7 +8,7 @@ import org.vaadin.training.fundamentals.happening.ui.VaadinView;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Component;
 
-public interface EditHappeningView<T extends Component> extends VaadinView<T> {
+public interface EditHappeningView<T extends Component> extends AddNewView<T> {
 
     public void setDatasource(BeanItem<Happening> item);
 
