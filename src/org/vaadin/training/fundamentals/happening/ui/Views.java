@@ -18,9 +18,16 @@ package org.vaadin.training.fundamentals.happening.ui;
 
 import org.vaadin.training.fundamentals.happening.ui.view.VaadinView;
 
+/**
+ * Interface for factory objects providing new instances of {@link VaadinView}
+ * through registered {@link ViewProvider}
+ * 
+ * @author Johannes
+ * 
+ */
 public interface Views {
 
     public void addProvider(Class<?> viewType, ViewProvider p);
-    
+
     public VaadinView<?> newInstance(Class<?> viewType);
 }

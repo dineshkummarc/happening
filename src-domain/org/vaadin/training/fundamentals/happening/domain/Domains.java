@@ -19,29 +19,49 @@ package org.vaadin.training.fundamentals.happening.domain;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Allows {@link DomainProvider} objects to be registerd to be used for creating
+ * new instances of {@link Domain} objects.
+ * 
+ * @author Johannes
+ * 
+ */
 public class Domains {
-    private Domains() { };
-    
+    private Domains() {
+    };
+
     private static final Map<String, DomainProvider> providers = new ConcurrentHashMap<String, DomainProvider>();
-    
+
     public static final String DEFAULT_DOMAIN_PROVIDER_NAME = "default-provider";
-    
+
+    /**
+     * Registers a new provider to be the default provider. e.g. the provider to
+     * be used when {@link #newInstance()} is called.
+     * 
+     * @param p
+     */
     public static void registerDefaultDomainProvider(DomainProvider p) {
         registerProvider(DEFAULT_DOMAIN_PROVIDER_NAME, p);
     }
-    
+
     public static void registerProvider(String name, DomainProvider p) {
         providers.put(name, p);
     }
-    
+
+    /**
+     * Creates a new instance of {@link Domain} from the default provider
+     * 
+     * @return
+     */
     public static Domain newInstance() {
         return newInstance(DEFAULT_DOMAIN_PROVIDER_NAME);
     }
-    
+
     public static Domain newInstance(String name) {
         DomainProvider p = providers.get(name);
         if (p == null) {
-            throw new IllegalArgumentException("No provider registered with name: " + name);
+            throw new IllegalArgumentException(
+                    "No provider registered with name: " + name);
         }
         return p.newDomain();
     }

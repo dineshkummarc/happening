@@ -16,11 +16,41 @@
 
 package org.vaadin.training.fundamentals.happening.ui;
 
+import com.vaadin.Application;
 import com.vaadin.ui.UriFragmentUtility;
 
+/**
+ * Application that provides additional services in addition to those of
+ * {@link Application}
+ * 
+ * @author Johannes
+ * 
+ */
 public interface ApplicationWithServices {
+    /**
+     * Gets the user data stored in a single cookie value
+     * 
+     * @return
+     */
     String getCookie();
+
+    /**
+     * Clears the cookie value used for storing user data
+     */
     void clearCookie();
+
+    /**
+     * Set the cookie value used for storing user data
+     * 
+     * @param data
+     */
     void setCookie(String data);
+
+    /**
+     * Get the UriFragmentUtility added to application (or its main window to be
+     * specific)
+     * 
+     * @return
+     */
     UriFragmentUtility getUriFragmentUtility();
 }

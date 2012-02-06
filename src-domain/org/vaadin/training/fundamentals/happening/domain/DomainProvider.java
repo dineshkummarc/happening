@@ -16,6 +16,18 @@
 
 package org.vaadin.training.fundamentals.happening.domain;
 
+/**
+ * Creates new instances of {@link Domain} objects.
+ * 
+ * @author Johannes
+ * 
+ */
 public interface DomainProvider {
+
+    /**
+     * Create a new instance of {@link Domain} implementation.
+     * 
+     * @return
+     */
     public Domain newDomain();
 }

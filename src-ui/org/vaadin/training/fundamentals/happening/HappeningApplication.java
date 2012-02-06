@@ -46,7 +46,8 @@ import com.vaadin.ui.UriFragmentUtility.FragmentChangedEvent;
 import com.vaadin.ui.UriFragmentUtility.FragmentChangedListener;
 
 public class HappeningApplication extends Application implements
-        HttpServletRequestListener, ApplicationWithServices, FragmentChangedListener {
+        HttpServletRequestListener, ApplicationWithServices,
+        FragmentChangedListener {
     private static final long serialVersionUID = 1L;
     private NavigationComponent navigation;
     private HttpServletRequest request;
@@ -57,11 +58,12 @@ public class HappeningApplication extends Application implements
     public void init() {
         AppData appData = new AppData(this);
         getContext().addTransactionListener(appData);
-        
+
         DomainUser user = DomainUtils.auth(getCookie());
         AppData.setCurrentUser(user);
-        
-        Window mainWindow = new Window("Happening Application");
+
+        Window mainWindow = new Window(AppData.getTr(getLocale()).getString(
+                "MainWindow.Caption"));
         setMainWindow(mainWindow);
         navigation = new NavigationComponent();
         registerViewProviders(navigation);
@@ -73,7 +75,7 @@ public class HappeningApplication extends Application implements
         navigation.setCurrentView(EditHappeningView.class, null);
         setTheme("happeningtheme");
     }
-    
+
     private void registerViewProviders(NavigationComponent mainLayout) {
         Views views = new ViewsImpl();
         views.addProvider(ListHappeningsView.class, new ViewProvider() {
@@ -136,13 +138,13 @@ public class HappeningApplication extends Application implements
             response.addCookie(cookie);
         }
     }
-    
+
     @Override
     public void setCookie(String data) {
         if (response != null) {
             Cookie cookie = new Cookie("userid", data);
             cookie.setPath("/");
-            cookie.setMaxAge(3600*24*30);
+            cookie.setMaxAge(3600 * 24 * 30);
             response.addCookie(cookie);
         }
     }
@@ -151,28 +153,33 @@ public class HappeningApplication extends Application implements
     public UriFragmentUtility getUriFragmentUtility() {
         return uriFragmentUtility;
     }
-    
+
     /**
      * Client has changed the fragment in the browser.
      */
     @Override
     public void fragmentChanged(FragmentChangedEvent source) {
-            String fragment = source.getUriFragmentUtility().getFragment();
-            if (fragment.isEmpty()) {
-                    return;
-            }
-            Class<?> viewType;
-            try {
-                viewType = Class.forName("org.vaadin.training.fundamentals.happening.ui.view." + NavigationComponent.parseFragmentView(fragment));
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-                throw new RuntimeException("Fragment " + fragment + " is not of View.");
-            }
-            Map<String, String> params = NavigationComponent.parseFragmentParams(fragment);
-            if (viewType != null) {
-                navigation.setCurrentView(viewType, params);
-            } else {
-                throw new RuntimeException("Fragment " + fragment + " is not of View.");
-            }
-    }    
+        String fragment = source.getUriFragmentUtility().getFragment();
+        if (fragment.isEmpty()) {
+            return;
+        }
+        Class<?> viewType;
+        try {
+            viewType = Class
+                    .forName("org.vaadin.training.fundamentals.happening.ui.view."
+                            + NavigationComponent.parseFragmentView(fragment));
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Fragment " + fragment
+                    + " is not of View.");
+        }
+        Map<String, String> params = NavigationComponent
+                .parseFragmentParams(fragment);
+        if (viewType != null) {
+            navigation.setCurrentView(viewType, params);
+        } else {
+            throw new RuntimeException("Fragment " + fragment
+                    + " is not of View.");
+        }
+    }
 }

@@ -18,6 +18,18 @@ package org.vaadin.training.fundamentals.happening.ui;
 
 import org.vaadin.training.fundamentals.happening.ui.view.VaadinView;
 
+/**
+ * {@link Views} uses ViewProviders to create new views of certain VaadinView
+ * implementations.
+ * 
+ * @author Johannes
+ * 
+ */
 public interface ViewProvider {
+    /**
+     * Returns a new instance of the implementing VaadinView
+     * 
+     * @return
+     */
     public VaadinView<?> newView();
 }

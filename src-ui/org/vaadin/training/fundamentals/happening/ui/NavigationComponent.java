@@ -85,6 +85,18 @@ public class NavigationComponent extends VerticalLayout implements Navigation {
         return activeView;
     }
 
+    /**
+     * Sets the current view unless the current view is already set. Uses
+     * {@link #Views} to create a new instance of the view and calls its
+     * {@link VaadinView#init} and gets the view content to display with
+     * {@link VaadinView#getViewContent}.
+     * 
+     * @param type
+     *            Class of a VaadinView that has a ViewProvider registered for
+     *            it
+     * @param params
+     *            Parameters to be passed to the view
+     */
     public void setCurrentView(Class<?> type, Map<String, String> params) {
         if (activeView != null && activeViewType.equals(type)) {
             // do nothing, since requested viewMock already active
@@ -138,6 +150,13 @@ public class NavigationComponent extends VerticalLayout implements Navigation {
         this.views = views;
     }
 
+    /**
+     * Parses URI fragment #<viewName>/<key>/<value>/<key>/<value> and returns
+     * the <viewName> part of fragment
+     * 
+     * @param params
+     * @return
+     */
     public static String parseFragmentView(String fragment) {
         String[] s = fragment.split("/");
         if (s != null && s.length > 0) {
@@ -146,6 +165,13 @@ public class NavigationComponent extends VerticalLayout implements Navigation {
         return null;
     }
 
+    /**
+     * Parses URI fragment #<viewName>/<key>/<value>/<key>/<value> and returns a
+     * map of all the key-value pairs.
+     * 
+     * @param params
+     * @return
+     */
     public static Map<String, String> parseFragmentParams(String fragment) {
         String[] s = fragment.split("/");
         if (s != null && s.length > 1 && (s.length % 2) == 1) {
@@ -159,7 +185,7 @@ public class NavigationComponent extends VerticalLayout implements Navigation {
 
     }
 
-    static String toFragmentParams(Map<String, String> params) {
+    private static String toFragmentParams(Map<String, String> params) {
         if (params == null) {
             return "";
         }

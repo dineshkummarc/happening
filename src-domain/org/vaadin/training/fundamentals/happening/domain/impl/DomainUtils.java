@@ -29,34 +29,55 @@ import org.vaadin.training.fundamentals.happening.ui.AppData;
 
 public class DomainUtils {
 
-    static String newRandomHexString() {
+    static String newRandomUUIDString() {
         return UUID.randomUUID().toString();
     }
-    
-    static String hash(String secret, String salt) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+
+    /**
+     * Hashes secret and salt
+     * 
+     * @param secret
+     * @param salt
+     * @return
+     * @throws NoSuchAlgorithmException
+     * @throws UnsupportedEncodingException
+     */
+    static String hash(String secret, String salt)
+            throws NoSuchAlgorithmException, UnsupportedEncodingException {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         md.update(secret.getBytes("UTF-8"));
         md.update(salt.getBytes("UTF-8"));
         byte[] hash = md.digest();
         return toHexString(hash);
     }
-    
+
     static boolean isOwner(DomainUser user, Happening happening) {
         if (user != null && happening != null && happening.getOwner() != null) {
             return user.getId().equals(happening.getOwner().getId());
         }
         return false;
     }
-    
+
+    /**
+     * Returns an byte array as lowercase hex string
+     * 
+     * @param bytes
+     * @return
+     */
     public static String toHexString(byte[] bytes) {
         BigInteger bi = new BigInteger(1, bytes);
         return String.format("%0" + (bytes.length << 1) + "x", bi);
     }
-    
+
+    /**
+     * Creates a new DomainUser with random password and salt.
+     * 
+     * @return
+     */
     public static DomainUser createUser() {
         DomainUser user = new DomainUser();
-        String salt = DomainUtils.newRandomHexString();
-        String password = DomainUtils.newRandomHexString();
+        String salt = DomainUtils.newRandomUUIDString();
+        String password = DomainUtils.newRandomUUIDString();
         user.setSalt(salt);
         try {
             user.setHash(hash(password, salt));
@@ -67,8 +88,10 @@ public class DomainUtils {
         }
         return user;
     }
-    
+
     public static DomainUser auth(String hash) {
-        return AppData.getDomain().find("SELECT u FROM DomainUser u WHERE u.hash = :hash", Collections.singletonMap("hash", (Object)hash));
+        return AppData.getDomain().find(
+                "SELECT u FROM DomainUser u WHERE u.hash = :hash",
+                Collections.singletonMap("hash", (Object) hash));
     }
 }

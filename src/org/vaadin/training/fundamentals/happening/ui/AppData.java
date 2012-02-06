@@ -27,6 +27,11 @@ import com.vaadin.Application;
 import com.vaadin.service.ApplicationContext.TransactionListener;
 import com.vaadin.ui.UriFragmentUtility;
 
+/**
+ * 
+ * @author Johannes
+ * 
+ */
 public class AppData implements TransactionListener {
 
     private static final long serialVersionUID = 1L;
@@ -56,6 +61,13 @@ public class AppData implements TransactionListener {
         }
     }
 
+    /**
+     * Return the ResourceBundle for a given locale. If no locale is defined
+     * resources for Locale.ENGLISH is returned.
+     * 
+     * @param locale
+     * @return
+     */
     public static ResourceBundle getTr(Locale locale) {
         if (locale == null) {
             locale = Locale.ENGLISH;
@@ -67,6 +79,11 @@ public class AppData implements TransactionListener {
         return instance.get().app.getLocale();
     }
 
+    /**
+     * Get the {@link Domain} associated for the AppData.
+     * 
+     * @return
+     */
     public static Domain getDomain() {
         if (instance.get().domain == null) {
             Domain domain = Domains.newInstance();
@@ -75,14 +92,27 @@ public class AppData implements TransactionListener {
         return instance.get().domain;
     }
 
+    /**
+     * Sets the current user. Not the same as Application.setUser.
+     * 
+     * @param user
+     */
     public static void setCurrentUser(DomainUser user) {
         instance.get().user = user;
     }
 
+    /**
+     * Gets the current user. Not the same as Application.getUser.
+     * 
+     * @return
+     */
     public static DomainUser getCurrentUser() {
         return instance.get().user;
     }
 
+    /**
+     * Sets the cookie information to be stored for the current user
+     */
     public static void setUserCookie() {
         Application app = instance.get().app;
         if (app instanceof ApplicationWithServices) {
@@ -91,6 +121,9 @@ public class AppData implements TransactionListener {
         }
     }
 
+    /**
+     * Removes the user cookie
+     */
     public static void clearUserCookie() {
         Application app = instance.get().app;
         if (app instanceof ApplicationWithServices) {
@@ -98,6 +131,11 @@ public class AppData implements TransactionListener {
         }
     }
 
+    /**
+     * Gets the UriFragmentUtility added to the main window
+     * 
+     * @return
+     */
     public static UriFragmentUtility getUriFragmentUtility() {
         Application app = instance.get().app;
         if (app instanceof ApplicationWithServices) {

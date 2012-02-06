@@ -22,31 +22,106 @@ import java.util.Map;
 
 import org.vaadin.training.fundamentals.happening.domain.entity.AbstractEntity;
 
+/**
+ * Facade for implementations providing CRUD operations for
+ * {@link AbstractEntity} entities.
+ * 
+ * @author Johannes
+ * 
+ */
 public interface Domain {
-   
+
+    /**
+     * Find a single entity of type by id.
+     * 
+     * @param clazz
+     * @param id
+     * @return
+     */
     public <A extends AbstractEntity> A find(Class<A> clazz, Long id);
 
+    /**
+     * List all entities of type
+     * 
+     * @param clazz
+     * @return
+     */
     public <A extends AbstractEntity> List<A> list(Class<A> clazz);
 
-    public <A extends AbstractEntity> List<A> list(Class<A> clazz, String queryStr,
-            Map<String, Object> parameters);
+    /**
+     * List entities of type by a custom query and query parameters.
+     * 
+     * @param clazz
+     * @param queryStr
+     * @param parameters
+     * @return
+     */
+    public <A extends AbstractEntity> List<A> list(Class<A> clazz,
+            String queryStr, Map<String, Object> parameters);
 
+    /**
+     * List entities of type by a custom query and query parameters, but limit
+     * the number of results to the given maximum.
+     * 
+     * @param queryStr
+     * @param parameters
+     * @param max
+     * @return
+     */
     public <A extends AbstractEntity> List<A> list(String queryStr,
             Map<String, Object> parameters, int max);
 
+    /**
+     * Find a single entity of type using a custom query and query parameters.s
+     * 
+     * @param queryStr
+     * @param parameters
+     * @return
+     */
     public <A extends AbstractEntity> A find(String queryStr,
             Map<String, Object> parameters);
 
+    /**
+     * Store (create or update) a given entity.
+     * 
+     * @param pojo
+     * @return
+     */
     public <A extends AbstractEntity> A store(A pojo);
 
+    /**
+     * Store (create or update) a collection of entities.
+     * 
+     * @param pojos
+     */
     public <A extends AbstractEntity> void storeAll(Collection<A> pojos);
 
+    /**
+     * Delete a single entity
+     * 
+     * @param pojo
+     */
     public void delete(AbstractEntity pojo);
 
+    /**
+     * Delete a collection of entities.
+     * 
+     * @param pojos
+     */
     public <A extends AbstractEntity> void deleteAll(Collection<A> pojos);
 
+    /**
+     * Close the storage.
+     */
     public void close();
 
+    /**
+     * Count the number of results for a given query
+     * 
+     * @param queryStr
+     * @param parameters
+     * @return
+     */
     public long count(String queryStr, Map<String, Object> parameters);
-    
+
 }

@@ -34,6 +34,8 @@ import org.vaadin.training.fundamentals.happening.domain.Domain;
 import org.vaadin.training.fundamentals.happening.domain.entity.AbstractEntity;
 
 /**
+ * Default implementation for a Domain. Uses EclipseLink specific JPA helpers.
+ * 
  * This class should not be extended.
  * 
  * @author Johannes
@@ -73,8 +75,8 @@ class DefaultDomain implements Domain {
     }
 
     @Override
-    public <A extends AbstractEntity> List<A> list(Class<A> clazz, String queryStr,
-            Map<String, Object> parameters) {
+    public <A extends AbstractEntity> List<A> list(Class<A> clazz,
+            String queryStr, Map<String, Object> parameters) {
         EntityManager em = getEntityManager();
         try {
             TypedQuery<A> query = em.createQuery(queryStr, clazz);
@@ -98,7 +100,8 @@ class DefaultDomain implements Domain {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <A extends AbstractEntity> A find(String queryStr, Map<String, Object> parameters) {
+    public <A extends AbstractEntity> A find(String queryStr,
+            Map<String, Object> parameters) {
         EntityManager em = getEntityManager();
         try {
             Query query = em.createQuery(queryStr);
@@ -126,7 +129,7 @@ class DefaultDomain implements Domain {
                 stored = em.merge(pojo);
             } else {
                 em.persist(pojo);
-            }            
+            }
             em.getTransaction().commit();
         } catch (Exception e) {
             e.printStackTrace();
