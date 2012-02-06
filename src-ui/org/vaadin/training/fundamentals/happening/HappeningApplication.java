@@ -55,6 +55,7 @@ public class HappeningApplication extends Application implements
         navigation.setSizeFull();
         mainWindow.addComponent(uriFragmentUtility);
         navigation.setCurrentView(EditHappeningView.class, null);
+        setTheme("happeningtheme");
     }
     
     private void registerViewProviders(NavigationComponent mainLayout) {
