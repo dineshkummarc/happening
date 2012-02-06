@@ -1,6 +1,9 @@
-package org.vaadin.training.fundamentals.happening.ui;
+package org.vaadin.training.fundamentals.happening.ui.view;
 
 import java.util.Map;
+
+import org.vaadin.training.fundamentals.happening.ui.Navigates;
+import org.vaadin.training.fundamentals.happening.ui.Navigation;
 
 import com.vaadin.ui.Component;
 

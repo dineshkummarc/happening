@@ -1,9 +1,8 @@
-package org.vaadin.training.fundamentals.happening.ui.edit;
+package org.vaadin.training.fundamentals.happening.ui.view;
 
 import java.io.Serializable;
 
 import org.vaadin.training.fundamentals.happening.domain.entity.Happening;
-import org.vaadin.training.fundamentals.happening.ui.VaadinView;
 
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Component;

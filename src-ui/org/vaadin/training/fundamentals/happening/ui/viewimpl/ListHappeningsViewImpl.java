@@ -1,4 +1,4 @@
-package org.vaadin.training.fundamentals.happening.ui.list;
+package org.vaadin.training.fundamentals.happening.ui.viewimpl;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -6,11 +6,13 @@ import java.util.Map;
 
 import org.vaadin.training.fundamentals.happening.domain.entity.Happening;
 import org.vaadin.training.fundamentals.happening.ui.Navigation;
-import org.vaadin.training.fundamentals.happening.ui.VaadinView;
-import org.vaadin.training.fundamentals.happening.ui.ViewEventRouter;
+import org.vaadin.training.fundamentals.happening.ui.presenter.ListHappeningsPresenter;
+import org.vaadin.training.fundamentals.happening.ui.view.ListHappeningsView;
+import org.vaadin.training.fundamentals.happening.ui.view.VaadinView;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.util.BeanItem;
+import com.vaadin.event.EventRouter;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Table;
@@ -23,11 +25,11 @@ public class ListHappeningsViewImpl implements ListHappeningsView<VerticalLayout
     private Table table;
     private Navigation navigation;
     private ListHappeningsPresenter presenter;
-    private ViewEventRouter viewEventRouter;
+    private EventRouter eventRouter;
     
     @SuppressWarnings("serial")
     public void init(Navigation navigation, Map<String, String> params) {
-        viewEventRouter = new ViewEventRouter();
+        eventRouter = new EventRouter();
         presenter = new ListHappeningsPresenter(this);
         this.navigation = navigation;
         layout = new VerticalLayout();
@@ -36,10 +38,11 @@ public class ListHappeningsViewImpl implements ListHappeningsView<VerticalLayout
         table = new Table("Your events");
         table.setSelectable(true);
         table.addListener(new ItemClickListener() {
+            @SuppressWarnings("unchecked")
             @Override
             public void itemClick(ItemClickEvent event) {
                 if (table.getValue() != null) {
-                    viewEventRouter.fireEvent(new ItemOpenEvent(table, (BeanItem<Happening>)event.getItem()));
+                    eventRouter.fireEvent(new ItemOpenEvent(table, (BeanItem<Happening>)event.getItem()));
                 }
             }
         });
@@ -66,7 +69,7 @@ public class ListHappeningsViewImpl implements ListHappeningsView<VerticalLayout
         try {
             Method method = ItemOpenListener.class.getDeclaredMethod(
                     "itemOpen", new Class[] { ItemOpenEvent.class });
-            viewEventRouter.addListener(ItemOpenEvent.class, listener, method);
+            eventRouter.addListener(ItemOpenEvent.class, listener, method);
         } catch (final java.lang.NoSuchMethodException e) {
             // This should never happen
             throw new java.lang.RuntimeException(
@@ -76,7 +79,7 @@ public class ListHappeningsViewImpl implements ListHappeningsView<VerticalLayout
 
     @Override
     public void removeListener(ItemOpenListener listener) {
-        viewEventRouter.removeListener(ItemOpenListener.class, listener);
+        eventRouter.removeListener(ItemOpenListener.class, listener);
     }
 
 }

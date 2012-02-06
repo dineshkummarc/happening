@@ -1,6 +1,5 @@
 package org.vaadin.training.fundamentals.happening;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
@@ -12,15 +11,17 @@ import org.vaadin.training.fundamentals.happening.domain.impl.DomainUtils;
 import org.vaadin.training.fundamentals.happening.ui.AppData;
 import org.vaadin.training.fundamentals.happening.ui.ApplicationWithServices;
 import org.vaadin.training.fundamentals.happening.ui.NavigationComponent;
-import org.vaadin.training.fundamentals.happening.ui.VaadinView;
 import org.vaadin.training.fundamentals.happening.ui.ViewProvider;
 import org.vaadin.training.fundamentals.happening.ui.Views;
 import org.vaadin.training.fundamentals.happening.ui.ViewsImpl;
-import org.vaadin.training.fundamentals.happening.ui.edit.AddNewView;
-import org.vaadin.training.fundamentals.happening.ui.edit.EditHappeningViewImpl;
-import org.vaadin.training.fundamentals.happening.ui.edit.EditHappeningView;
-import org.vaadin.training.fundamentals.happening.ui.list.ListHappeningsViewImpl;
-import org.vaadin.training.fundamentals.happening.ui.list.ListHappeningsView;
+import org.vaadin.training.fundamentals.happening.ui.view.AddNewView;
+import org.vaadin.training.fundamentals.happening.ui.view.EditHappeningView;
+import org.vaadin.training.fundamentals.happening.ui.view.ListHappeningsView;
+import org.vaadin.training.fundamentals.happening.ui.view.ShowHappeningView;
+import org.vaadin.training.fundamentals.happening.ui.view.VaadinView;
+import org.vaadin.training.fundamentals.happening.ui.viewimpl.EditHappeningViewImpl;
+import org.vaadin.training.fundamentals.happening.ui.viewimpl.ListHappeningsViewImpl;
+import org.vaadin.training.fundamentals.happening.ui.viewimpl.ShowHappeningViewImpl;
 
 import com.vaadin.Application;
 import com.vaadin.terminal.gwt.server.HttpServletRequestListener;
@@ -35,7 +36,6 @@ public class HappeningApplication extends Application implements
     private HttpServletRequest request;
     private HttpServletResponse response;
     private UriFragmentUtility uriFragmentUtility;
-    private Map<String, Class<?>> fragmentViewMap = new HashMap<String, Class<?>>();
 
     @Override
     public void init() {
@@ -75,9 +75,12 @@ public class HappeningApplication extends Application implements
                 return new EditHappeningViewImpl();
             }
         });
-        fragmentViewMap.put(EditHappeningView.class.getSimpleName(), EditHappeningView.class);
-        fragmentViewMap.put(ListHappeningsView.class.getSimpleName(), ListHappeningsView.class);
-        fragmentViewMap.put(AddNewView.class.getSimpleName(), AddNewView.class);
+        views.addProvider(ShowHappeningView.class, new ViewProvider() {
+            @Override
+            public VaadinView<?> newView() {
+                return new ShowHappeningViewImpl();
+            }
+        });
         mainLayout.setViews(views);
     }
 
@@ -140,10 +143,15 @@ public class HappeningApplication extends Application implements
     public void fragmentChanged(FragmentChangedEvent source) {
             String fragment = source.getUriFragmentUtility().getFragment();
             if (fragment.isEmpty()) {
-                    // Figure out why Vaadin sets empty string after login
                     return;
             }
-            Class<?> viewType = fragmentViewMap.get(NavigationComponent.parseFragmentView(fragment));
+            Class<?> viewType;
+            try {
+                viewType = Class.forName("org.vaadin.training.fundamentals.happening.ui.view." + NavigationComponent.parseFragmentView(fragment));
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+                throw new RuntimeException("Fragment " + fragment + " is not of View.");
+            }
             Map<String, String> params = NavigationComponent.parseFragmentParams(fragment);
             if (viewType != null) {
                 navigation.setCurrentView(viewType, params);

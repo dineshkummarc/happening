@@ -4,7 +4,14 @@ import java.util.Map;
 
 public interface Navigation {
 
-    public void setViews(Views views);
-    
-    public VaadinView<?> setCurrentView(Class<?> type, Map<String, String> params);
+    void setViews(Views views);
+
+    void setCurrentView(Class<?> type, Map<String, String> params);
+
+    public interface PendingNavigationCallback {
+
+        void commit();
+
+        void discard();
+    }
 }

@@ -3,6 +3,8 @@ package org.vaadin.training.fundamentals.happening.ui;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.vaadin.training.fundamentals.happening.ui.view.VaadinView;
+
 public class ViewsImpl implements Views {
     public ViewsImpl() {
 

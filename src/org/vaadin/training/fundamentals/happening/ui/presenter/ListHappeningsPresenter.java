@@ -1,4 +1,4 @@
-package org.vaadin.training.fundamentals.happening.ui.list;
+package org.vaadin.training.fundamentals.happening.ui.presenter;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,9 +9,10 @@ import com.vaadin.data.util.BeanItemContainer;
 
 import org.vaadin.training.fundamentals.happening.domain.entity.Happening;
 import org.vaadin.training.fundamentals.happening.ui.AppData;
-import org.vaadin.training.fundamentals.happening.ui.edit.EditHappeningView;
-import org.vaadin.training.fundamentals.happening.ui.list.ListHappeningsView.ItemOpenEvent;
-import org.vaadin.training.fundamentals.happening.ui.list.ListHappeningsView.ItemOpenListener;
+import org.vaadin.training.fundamentals.happening.ui.view.ListHappeningsView;
+import org.vaadin.training.fundamentals.happening.ui.view.ShowHappeningView;
+import org.vaadin.training.fundamentals.happening.ui.view.ListHappeningsView.ItemOpenEvent;
+import org.vaadin.training.fundamentals.happening.ui.view.ListHappeningsView.ItemOpenListener;
 
 public class ListHappeningsPresenter {
 
@@ -40,7 +41,7 @@ public class ListHappeningsPresenter {
         public void itemOpen(ItemOpenEvent event) {
             Map<String, String> params = new HashMap<String, String>();
             params.put("id", String.valueOf(event.getBean().getId()));
-            view.navigateTo(EditHappeningView.class, params);
+            view.navigateTo(ShowHappeningView.class, params);
         }
     };
 }
