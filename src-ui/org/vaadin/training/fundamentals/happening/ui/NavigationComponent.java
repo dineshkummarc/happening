@@ -99,7 +99,7 @@ public class NavigationComponent extends VerticalLayout implements Navigation {
      */
     public void setCurrentView(Class<?> type, Map<String, String> params) {
         if (activeView != null && activeViewType.equals(type)) {
-            // do nothing, since requested viewMock already active
+            // do nothing, since requested view already active
             return;
         }
 
@@ -118,15 +118,15 @@ public class NavigationComponent extends VerticalLayout implements Navigation {
 
     private void doSetCurrentView(Class<?> type, Map<String, String> params) {
         try {
-            // Create new viewMock
+            // Create new view
             VaadinView<?> newView = views.newInstance(type);
 
-            // Initialize selected viewMock (once)
+            // Initialize selected view (once)
             newView.init(this, params);
 
             Component newContent = newView.getViewContent();
 
-            // Remove current viewMock if one exists
+            // Remove current view if one exists
             if (activeView != null) {
                 removeComponent(activeView.getViewContent());
             }
@@ -134,12 +134,12 @@ public class NavigationComponent extends VerticalLayout implements Navigation {
             activeView = newView;
             activeViewType = type;
 
-            // Add new viewMock
+            // Add new view
             addComponent(newContent);
             setExpandRatio(newContent, 1.0f);
 
             AppData.getUriFragmentUtility().setFragment(
-                    type.getSimpleName() + toFragmentParams(params));
+                    type.getSimpleName() + toFragmentParams(params), false);
 
         } catch (final Exception e) {
             throw new RuntimeException("View instantiation failed!", e);
@@ -185,7 +185,7 @@ public class NavigationComponent extends VerticalLayout implements Navigation {
 
     }
 
-    private static String toFragmentParams(Map<String, String> params) {
+    static String toFragmentParams(Map<String, String> params) {
         if (params == null) {
             return "";
         }
