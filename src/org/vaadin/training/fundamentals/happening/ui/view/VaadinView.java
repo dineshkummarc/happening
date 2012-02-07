@@ -18,13 +18,36 @@ package org.vaadin.training.fundamentals.happening.ui.view;
 
 import java.util.Map;
 
-import org.vaadin.training.fundamentals.happening.ui.Navigates;
+import org.vaadin.training.fundamentals.happening.ui.HasNavigation;
 import org.vaadin.training.fundamentals.happening.ui.Navigation;
+import org.vaadin.training.fundamentals.happening.ui.NoAccessException;
+import org.vaadin.training.fundamentals.happening.ui.NotAuthenticatedException;
 
 import com.vaadin.ui.Component;
 
-public interface VaadinView<T extends Component> extends Navigates {
+/**
+ * View in model view presenter
+ * 
+ * @author Johannes
+ * 
+ * @param <T>
+ */
+public interface VaadinView<T extends Component> extends HasNavigation {
 
-    public void init(Navigation navigation, Map<String, String> params);
-    public T getViewContent();
+    void init(Navigation navigation, Map<String, String> params)
+            throws NotAuthenticatedException, NoAccessException;
+
+    T asComponent();
+
+    /**
+     * The VaadView should be initialized for every navigation i.e. refresh() is
+     * called when the view is set as active view and it's already the current
+     * active view.
+     * 
+     * @author Johannes
+     * 
+     */
+    public interface HasRefresh {
+        void refresh();
+    }
 }

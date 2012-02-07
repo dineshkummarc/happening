@@ -34,7 +34,7 @@ public interface Navigation {
 
     /**
      * Callback for a pending navigation. Used by
-     * {@link Navigates#WithUserPrompt} views to signal canceling or accepting
+     * {@link HasNavigation#WithUserPrompt} views to signal canceling or accepting
      * navigation away from it. It's up to the implementor to decide how to keep
      * track if the pending navigation is still valid or has the view change
      * already occurred.

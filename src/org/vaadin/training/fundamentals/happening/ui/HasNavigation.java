@@ -27,12 +27,12 @@ import org.vaadin.training.fundamentals.happening.ui.view.VaadinView;
  * @author Johannes
  * 
  */
-public interface Navigates {
+public interface HasNavigation {
     public <T extends VaadinView<?>> void navigateTo(Class<T> view,
             Map<String, String> params);
 
     /**
-     * Specialized {@link Navigates} view that needs to user prompt before
+     * Specialized {@link HasNavigation} view that needs to user prompt before
      * {@link Navigation} navigates away from this view.
      * 
      * @author Johannes
@@ -43,7 +43,7 @@ public interface Navigates {
         /**
          * The view should show a user prompt and return a boolean value
          * indicating whether the prompt was shown or not. The view should also
-         * store the callback interface and use it to commmunicate to the
+         * store the callback interface and use it to communicate to the
          * Navigation that it is ok to do the pending view change.
          * 
          * @param callback

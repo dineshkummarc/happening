@@ -39,7 +39,6 @@ public class AppData implements TransactionListener {
     private static final ThreadLocal<AppData> instance = new ThreadLocal<AppData>();
 
     private Application app;
-    private DomainUser user;
     private Domain domain;
 
     public AppData(Application app) {
@@ -98,16 +97,16 @@ public class AppData implements TransactionListener {
      * @param user
      */
     public static void setCurrentUser(DomainUser user) {
-        instance.get().user = user;
+        instance.get().app.setUser(user);
     }
 
     /**
-     * Gets the current user. Not the same as Application.getUser.
+     * Gets the current user.
      * 
      * @return
      */
     public static DomainUser getCurrentUser() {
-        return instance.get().user;
+        return (DomainUser) instance.get().app.getUser();
     }
 
     /**
@@ -116,8 +115,8 @@ public class AppData implements TransactionListener {
     public static void setUserCookie() {
         Application app = instance.get().app;
         if (app instanceof ApplicationWithServices) {
-            ((ApplicationWithServices) app).setCookie(instance.get().user
-                    .getHash());
+            ((ApplicationWithServices) app).setCookie(((DomainUser) app
+                    .getUser()).getHash());
         }
     }
 

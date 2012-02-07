@@ -23,8 +23,11 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.vaadin.training.fundamentals.happening.domain.entity.Happening;
-import org.vaadin.training.fundamentals.happening.ui.Navigates;
+import org.vaadin.training.fundamentals.happening.ui.AppData;
+import org.vaadin.training.fundamentals.happening.ui.HasNavigation;
 import org.vaadin.training.fundamentals.happening.ui.Navigation;
+import org.vaadin.training.fundamentals.happening.ui.NoAccessException;
+import org.vaadin.training.fundamentals.happening.ui.NotAuthenticatedException;
 import org.vaadin.training.fundamentals.happening.ui.Navigation.PendingNavigationCallback;
 import org.vaadin.training.fundamentals.happening.ui.presenter.EditHappeningPresenter;
 import org.vaadin.training.fundamentals.happening.ui.view.EditHappeningView;
@@ -45,14 +48,13 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
-public class EditHappeningViewImpl implements
+public class EditHappeningViewImpl extends VerticalLayout implements
         EditHappeningView<VerticalLayout>, Button.ClickListener, Serializable,
-        Navigates.WithUserPrompt {
+        HasNavigation.WithUserPrompt {
 
     private static final long serialVersionUID = 1L;
 
     private Form form;
-    private VerticalLayout layout;
     private final EditHappeningPresenter presenter;
     private Button saveButton;
     private Button cancelButton;
@@ -73,7 +75,11 @@ public class EditHappeningViewImpl implements
         presenter = new EditHappeningPresenter(this);
     }
 
-    public void init(Navigation navigation, Map<String, String> params) {
+    public void init(Navigation navigation, Map<String, String> params)
+            throws NotAuthenticatedException, NoAccessException {
+        if (AppData.getCurrentUser() == null) {
+            throw new NotAuthenticatedException();
+        }
         this.navigation = navigation;
         buildLayout();
         try {
@@ -81,10 +87,6 @@ public class EditHappeningViewImpl implements
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public VerticalLayout getViewContent() {
-        return layout;
     }
 
     public void setDatasource(BeanItem<Happening> item) {
@@ -103,7 +105,7 @@ public class EditHappeningViewImpl implements
     }
 
     public void showSaveSuccess() {
-        layout.getWindow().showNotification("Saved",
+        getWindow().showNotification("Saved",
                 Notification.TYPE_TRAY_NOTIFICATION);
     }
 
@@ -140,7 +142,6 @@ public class EditHappeningViewImpl implements
     }
 
     private void buildLayout() {
-        layout = new VerticalLayout();
         form = new Form();
         form.setFormFieldFactory(new HappeningFieldFactory());
         form.setImmediate(true);
@@ -149,7 +150,7 @@ public class EditHappeningViewImpl implements
         saveButton.addListener(this);
         cancelButton = new Button("Cancel");
         cancelButton.addListener(this);
-        layout.addComponent(form);
+        addComponent(form);
         form.getFooter().addComponent(saveButton);
         form.getFooter().addComponent(cancelButton);
     }
@@ -183,7 +184,7 @@ public class EditHappeningViewImpl implements
             okButton.addListener(new ClickListener() {
                 @Override
                 public void buttonClick(ClickEvent event) {
-                    layout.getWindow().removeWindow(confirmWindow);
+                    getWindow().removeWindow(confirmWindow);
                     if (currentCallback != null) {
                         currentCallback.commit();
                     }
@@ -193,17 +194,22 @@ public class EditHappeningViewImpl implements
             cancelButton.addListener(new ClickListener() {
                 @Override
                 public void buttonClick(ClickEvent event) {
-                    layout.getWindow().removeWindow(confirmWindow);
+                    getWindow().removeWindow(confirmWindow);
                     if (currentCallback != null) {
                         currentCallback.discard();
-                    }                    
+                    }
                 }
             });
             confirmWindow.addComponent(okButton);
             confirmWindow.addComponent(cancelButton);
-            layout.getWindow().addWindow(confirmWindow);
+            getWindow().addWindow(confirmWindow);
             return true;
         }
         return false;
+    }
+
+    @Override
+    public VerticalLayout asComponent() {
+        return this;
     }
 }

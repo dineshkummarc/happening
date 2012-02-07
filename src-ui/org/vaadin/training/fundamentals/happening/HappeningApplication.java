@@ -27,19 +27,24 @@ import org.vaadin.training.fundamentals.happening.domain.impl.DomainUtils;
 import org.vaadin.training.fundamentals.happening.ui.AppData;
 import org.vaadin.training.fundamentals.happening.ui.ApplicationWithServices;
 import org.vaadin.training.fundamentals.happening.ui.NavigationComponent;
+import org.vaadin.training.fundamentals.happening.ui.NoAccessException;
+import org.vaadin.training.fundamentals.happening.ui.NotAuthenticatedException;
 import org.vaadin.training.fundamentals.happening.ui.ViewProvider;
 import org.vaadin.training.fundamentals.happening.ui.Views;
 import org.vaadin.training.fundamentals.happening.ui.ViewsImpl;
 import org.vaadin.training.fundamentals.happening.ui.view.AddNewView;
 import org.vaadin.training.fundamentals.happening.ui.view.EditHappeningView;
 import org.vaadin.training.fundamentals.happening.ui.view.ListHappeningsView;
+import org.vaadin.training.fundamentals.happening.ui.view.LoginView;
 import org.vaadin.training.fundamentals.happening.ui.view.ShowHappeningView;
 import org.vaadin.training.fundamentals.happening.ui.view.VaadinView;
 import org.vaadin.training.fundamentals.happening.ui.viewimpl.EditHappeningViewImpl;
 import org.vaadin.training.fundamentals.happening.ui.viewimpl.ListHappeningsViewImpl;
+import org.vaadin.training.fundamentals.happening.ui.viewimpl.LoginViewImpl;
 import org.vaadin.training.fundamentals.happening.ui.viewimpl.ShowHappeningViewImpl;
 
 import com.vaadin.Application;
+import com.vaadin.terminal.Terminal;
 import com.vaadin.terminal.gwt.server.HttpServletRequestListener;
 import com.vaadin.ui.*;
 import com.vaadin.ui.UriFragmentUtility.FragmentChangedEvent;
@@ -56,6 +61,8 @@ public class HappeningApplication extends Application implements
 
     @Override
     public void init() {
+        setLogoutURL(getURL().toString() + "../logout.html");
+
         AppData appData = new AppData(this);
         getContext().addTransactionListener(appData);
 
@@ -65,15 +72,42 @@ public class HappeningApplication extends Application implements
         Window mainWindow = new Window(AppData.getTr(getLocale()).getString(
                 "MainWindow.Caption"));
         setMainWindow(mainWindow);
+
         navigation = new NavigationComponent();
         registerViewProviders(navigation);
+
         uriFragmentUtility = new UriFragmentUtility();
         uriFragmentUtility.addListener(this);
-        mainWindow.setContent(navigation);
+
+        getMainWindow().setContent(navigation);
         navigation.setSizeFull();
-        mainWindow.addComponent(uriFragmentUtility);
-        navigation.setCurrentView(EditHappeningView.class, null);
+        getMainWindow().addComponent(uriFragmentUtility);
+        navigation.setCurrentView(LoginView.class, null);
+
         setTheme("happeningtheme");
+    }
+
+    @Override
+    public void terminalError(final Terminal.ErrorEvent event) {
+        event.getThrowable().printStackTrace();
+        Throwable cause = event.getThrowable().getCause();
+        if (cause instanceof RuntimeException && cause.getCause() != null) {
+            Throwable innerCause = cause.getCause();
+            if (innerCause instanceof NoAccessException) {
+                getMainWindow().showNotification(
+                        AppData.getTr(AppData.getLocale()).getString(
+                                "Common.NoAccess"),
+                        Window.Notification.TYPE_ERROR_MESSAGE);
+            } else if (innerCause instanceof NotAuthenticatedException) {
+                navigation.setCurrentView(LoginView.class, null);
+            }
+        } else {
+            super.terminalError(event);
+        }
+    }
+
+    void showLoggedInContent() {
+
     }
 
     private void registerViewProviders(NavigationComponent mainLayout) {
@@ -97,6 +131,12 @@ public class HappeningApplication extends Application implements
             @Override
             public VaadinView<?> newView() {
                 return new ShowHappeningViewImpl();
+            }
+        });
+        views.addProvider(LoginView.class, new ViewProvider() {
+            @Override
+            public VaadinView<?> newView() {
+                return new LoginViewImpl();
             }
         });
         mainLayout.setViews(views);

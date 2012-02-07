@@ -24,13 +24,12 @@ import org.vaadin.training.fundamentals.happening.ui.view.AddNewView;
 import org.vaadin.training.fundamentals.happening.ui.view.ListHappeningsView;
 import org.vaadin.training.fundamentals.happening.ui.view.VaadinView;
 
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Button.ClickEvent;
 
 public class NavigationComponent extends VerticalLayout implements Navigation {
 
@@ -69,10 +68,10 @@ public class NavigationComponent extends VerticalLayout implements Navigation {
         });
 
         NativeButton logoutButton = new NativeButton("Logout");
-        listButton.addListener(new ClickListener() {
+        logoutButton.addListener(new ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-
+                getApplication().close();
             }
         });
         header.addComponent(listButton);
@@ -98,16 +97,18 @@ public class NavigationComponent extends VerticalLayout implements Navigation {
      *            Parameters to be passed to the view
      */
     public void setCurrentView(Class<?> type, Map<String, String> params) {
-        if (activeView != null && activeViewType.equals(type)) {
-            // do nothing, since requested view already active
+        if (activeViewType != null && activeViewType.equals(type)) {
+            if (activeView instanceof VaadinView.HasRefresh) {
+                ((VaadinView.HasRefresh) activeView).refresh();
+            }
             return;
         }
 
         if (activeView != null
-                && activeView instanceof Navigates.WithUserPrompt) {
+                && activeView instanceof HasNavigation.WithUserPrompt) {
             PendingNavigationCallback callback = new NavigationCallbackImpl(
                     activeView, type, params);
-            if (((Navigates.WithUserPrompt) activeView)
+            if (((HasNavigation.WithUserPrompt) activeView)
                     .showUserPrompt(callback)) {
                 return;
             }
@@ -117,33 +118,33 @@ public class NavigationComponent extends VerticalLayout implements Navigation {
     }
 
     private void doSetCurrentView(Class<?> type, Map<String, String> params) {
-        try {
-            // Create new view
-            VaadinView<?> newView = views.newInstance(type);
+        // Create new view
+        VaadinView<?> newView = views.newInstance(type);
 
+        try {
             // Initialize selected view (once)
             newView.init(this, params);
 
-            Component newContent = newView.getViewContent();
-
             // Remove current view if one exists
             if (activeView != null) {
-                removeComponent(activeView.getViewContent());
+                removeComponent(activeView.asComponent());
             }
 
             activeView = newView;
             activeViewType = type;
 
             // Add new view
-            addComponent(newContent);
-            setExpandRatio(newContent, 1.0f);
+            addComponent(newView.asComponent());
+            setExpandRatio(newView.asComponent(), 1.0f);
 
             AppData.getUriFragmentUtility().setFragment(
                     type.getSimpleName() + toFragmentParams(params), false);
-
-        } catch (final Exception e) {
-            throw new RuntimeException("View instantiation failed!", e);
+        } catch (NoAccessException e) {
+            throw new RuntimeException(e);
+        } catch (NotAuthenticatedException e) {
+            throw new RuntimeException(e);
         }
+
     }
 
     public void setViews(Views views) {

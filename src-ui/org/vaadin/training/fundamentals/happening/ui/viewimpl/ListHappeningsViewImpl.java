@@ -21,7 +21,10 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 import org.vaadin.training.fundamentals.happening.domain.entity.Happening;
+import org.vaadin.training.fundamentals.happening.ui.AppData;
 import org.vaadin.training.fundamentals.happening.ui.Navigation;
+import org.vaadin.training.fundamentals.happening.ui.NoAccessException;
+import org.vaadin.training.fundamentals.happening.ui.NotAuthenticatedException;
 import org.vaadin.training.fundamentals.happening.ui.presenter.ListHappeningsPresenter;
 import org.vaadin.training.fundamentals.happening.ui.view.ListHappeningsView;
 import org.vaadin.training.fundamentals.happening.ui.view.VaadinView;
@@ -34,23 +37,24 @@ import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 
-public class ListHappeningsViewImpl implements ListHappeningsView<VerticalLayout>, Serializable {
+public class ListHappeningsViewImpl extends VerticalLayout implements ListHappeningsView<VerticalLayout>, Serializable {
 
     private static final long serialVersionUID = 1L;
-    private VerticalLayout layout;
     private Table table;
     private Navigation navigation;
     private ListHappeningsPresenter presenter;
     private EventRouter eventRouter;
     
     @SuppressWarnings("serial")
-    public void init(Navigation navigation, Map<String, String> params) {
+    public void init(Navigation navigation, Map<String, String> params) throws NotAuthenticatedException, NoAccessException {
+        if (AppData.getCurrentUser() == null) {
+            throw new NotAuthenticatedException();
+        }
         eventRouter = new EventRouter();
         presenter = new ListHappeningsPresenter(this);
         this.navigation = navigation;
-        layout = new VerticalLayout();
-        layout.setSizeFull();
-        layout.setMargin(true);
+        setSizeFull();
+        setMargin(true);
         table = new Table("Your events");
         table.setSelectable(true);
         table.addListener(new ItemClickListener() {
@@ -63,12 +67,8 @@ public class ListHappeningsViewImpl implements ListHappeningsView<VerticalLayout
             }
         });
         table.setSizeFull();
-        layout.addComponent(table);
+        addComponent(table);
         presenter.init();
-    }
-
-    public VerticalLayout getViewContent() {
-        return layout;
     }
 
     public <T extends VaadinView<?>> void navigateTo(Class<T> view, Map<String, String> params) {
@@ -96,6 +96,11 @@ public class ListHappeningsViewImpl implements ListHappeningsView<VerticalLayout
     @Override
     public void removeListener(ItemOpenListener listener) {
         eventRouter.removeListener(ItemOpenListener.class, listener);
+    }
+
+    @Override
+    public VerticalLayout asComponent() {
+        return this;
     }
 
 }

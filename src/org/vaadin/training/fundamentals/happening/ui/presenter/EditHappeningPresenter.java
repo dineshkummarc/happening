@@ -20,8 +20,9 @@ import java.util.Map;
 
 import org.vaadin.training.fundamentals.happening.domain.entity.DomainUser;
 import org.vaadin.training.fundamentals.happening.domain.entity.Happening;
-import org.vaadin.training.fundamentals.happening.domain.impl.DomainUtils;
 import org.vaadin.training.fundamentals.happening.ui.AppData;
+import org.vaadin.training.fundamentals.happening.ui.NoAccessException;
+import org.vaadin.training.fundamentals.happening.ui.NotAuthenticatedException;
 import org.vaadin.training.fundamentals.happening.ui.PresenterInitFailedException;
 import org.vaadin.training.fundamentals.happening.ui.view.EditHappeningView;
 import org.vaadin.training.fundamentals.happening.ui.view.ListHappeningsView;
@@ -46,17 +47,29 @@ public class EditHappeningPresenter implements
     }
 
     public void init(Map<String, String> params)
-            throws PresenterInitFailedException {
+            throws PresenterInitFailedException, NoAccessException,
+            NotAuthenticatedException {
+        DomainUser currentUser = AppData.getCurrentUser();
+        if (currentUser == null) {
+            throw new NotAuthenticatedException();
+        }
+
         if (params != null) {
+            // Existing item
             Long id = Long.valueOf(params.get("id"));
             Happening happening = AppData.getDomain().find(Happening.class, id);
             if (happening != null) {
-                view.setDatasource(new BeanItem<Happening>(happening));
+                if (happening.getOwner().getId().equals(currentUser.getId())) {
+                    view.setDatasource(new BeanItem<Happening>(happening));
+                } else {
+                    throw new NoAccessException();
+                }
             } else {
                 throw new PresenterInitFailedException(
                         "Cannot find entity with id: " + id);
             }
         } else {
+            // New item
             view.setDatasource(new BeanItem<Happening>(new Happening()));
         }
     }
@@ -65,28 +78,26 @@ public class EditHappeningPresenter implements
         view.navigateTo(ListHappeningsView.class, null);
     }
 
-    public void itemSaved(ItemSavedEvent event) {
+    public void itemSaved(ItemSavedEvent event)
+            throws NotAuthenticatedException, NoAccessException {
         Happening happening = (Happening) event.getBean();
         DomainUser currentUser = AppData.getCurrentUser();
-        boolean setCookie = false;
-        if (happening.getOwner() != null && currentUser != null
-                && currentUser.getId().equals(happening.getOwner().getId())) {
-            happening = AppData.getDomain().store(happening);
-            currentUser = AppData.getDomain().find(DomainUser.class,
-                    currentUser.getId());
-        } else if (happening.getOwner() == null) {
-            if (currentUser == null) {
-                currentUser = DomainUtils.createUser();
-                setCookie = true;
-                currentUser = AppData.getDomain().store(currentUser);
-            }
+        if (currentUser == null) {
+            throw new NotAuthenticatedException();
+        }
+        if (happening.getOwner() != null
+                && !currentUser.getId().equals(happening.getOwner().getId())) {
+            throw new NoAccessException();
+        }
+
+        if (happening.getOwner() == null) {
             currentUser.getHappenings().add(happening);
             happening.setOwner(currentUser);
             happening = AppData.getDomain().store(happening);
-        }
-        AppData.setCurrentUser(currentUser);
-        if (setCookie) {
-            AppData.setUserCookie();
+        } else {
+            happening = AppData.getDomain().store(happening);
+            currentUser = AppData.getDomain().find(DomainUser.class,
+                    currentUser.getId());
         }
 
         view.showSaveSuccess();
