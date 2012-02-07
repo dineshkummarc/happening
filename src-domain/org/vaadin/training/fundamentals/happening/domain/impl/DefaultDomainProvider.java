@@ -21,8 +21,14 @@ import org.vaadin.training.fundamentals.happening.domain.DomainProvider;
 
 public class DefaultDomainProvider implements DomainProvider {
 
+    private final String persistenceUnit;
+
+    public DefaultDomainProvider(String persistenceUnit) {
+        this.persistenceUnit = persistenceUnit;
+    }
+
     public Domain newDomain() {
-        return new DefaultDomain();
+        return new DefaultDomain(persistenceUnit);
     }
 
 }

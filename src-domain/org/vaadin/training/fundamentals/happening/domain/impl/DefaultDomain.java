@@ -46,8 +46,8 @@ class DefaultDomain implements Domain {
     EntityManagerFactory emf;
     EntityManager em;
 
-    public DefaultDomain() {
-        emf = Persistence.createEntityManagerFactory("h2");
+    public DefaultDomain(String persistenceUnit) {
+        emf = Persistence.createEntityManagerFactory(persistenceUnit);
     }
 
     @Override
@@ -142,7 +142,7 @@ class DefaultDomain implements Domain {
     @Override
     public <A extends AbstractEntity> void storeAll(Collection<A> pojos) {
         // TODO Auto-generated method stub
-
+        throw new UnsupportedOperationException();
     }
 
     @Override

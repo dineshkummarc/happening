@@ -25,7 +25,7 @@ import org.vaadin.training.fundamentals.happening.domain.impl.DefaultDomainProvi
 public class HappeningContextListener implements ServletContextListener {
 
     public void contextInitialized(ServletContextEvent sce) {
-        Domains.registerDefaultDomainProvider(new DefaultDomainProvider());
+        Domains.registerDefaultDomainProvider(new DefaultDomainProvider("h2"));
     }
 
     public void contextDestroyed(ServletContextEvent sce) {
