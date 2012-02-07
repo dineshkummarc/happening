@@ -67,7 +67,7 @@ public class ShowHappeningViewImpl extends GridLayout implements
     private void rebuildLayout() {
         removeAllComponents();
         ResourceBundle tr = AppData.getTr(AppData.getLocale());
-        Button editButton = new Button(tr.getString("Button.Edit.Caption"));
+        Button editButton = new Button(tr.getString("Button.Edit"));
         editButton.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {

@@ -11,9 +11,12 @@ import org.vaadin.training.fundamentals.happening.ui.view.ListHappeningsView;
 import org.vaadin.training.fundamentals.happening.ui.view.LoginView;
 import org.vaadin.training.fundamentals.happening.ui.view.VaadinView;
 
+import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.PasswordField;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
 
 public class LoginViewImpl extends CssLayout implements LoginView<CssLayout>,
@@ -46,6 +49,8 @@ public class LoginViewImpl extends CssLayout implements LoginView<CssLayout>,
 
     private void showLoginWindow() {
         loginLayout = new CustomLayout("loginlayout");
+        loginLayout.setSizeFull();
+        loginLayout.addStyleName("login");
         Window loginWindow = new Window(tr.getString("LoginWindow.Caption"),
                 loginLayout);
         loginWindow.setWidth("60%");
@@ -53,6 +58,16 @@ public class LoginViewImpl extends CssLayout implements LoginView<CssLayout>,
         loginWindow.setClosable(false);
         loginWindow.setModal(true);
         loginWindow.center();
+
+        TextField username = new TextField(tr.getString("LoginView.Username"));
+        loginLayout.addComponent(username, "username");
+        PasswordField password = new PasswordField(
+                tr.getString("LoginView.Password"));
+        loginLayout.addComponent(password, "password");
+
+        Button loginButton = new Button(tr.getString("Button.Login"));
+        loginLayout.addComponent(loginButton, "loginButton");
+
         getWindow().addWindow(loginWindow);
     }
 
