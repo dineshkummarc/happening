@@ -25,7 +25,7 @@ import org.vaadin.training.fundamentals.happening.ui.NotAuthenticatedException;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Component;
 
-public interface EditHappeningView<T extends Component> extends AddNewView<T> {
+public interface EditHappeningView<T extends Component> extends VaadinView<T> {
 
     public void setDatasource(BeanItem<Happening> item);
 
@@ -40,7 +40,8 @@ public interface EditHappeningView<T extends Component> extends AddNewView<T> {
     public void removeListener(SaveCanceledListener listener);
 
     public interface ItemSavedListener extends Serializable {
-        public void itemSaved(ItemSavedEvent event) throws NotAuthenticatedException, NoAccessException;
+        public void itemSaved(ItemSavedEvent event)
+                throws NotAuthenticatedException, NoAccessException;
     }
 
     public interface SaveCanceledListener extends Serializable {
@@ -61,7 +62,7 @@ public interface EditHappeningView<T extends Component> extends AddNewView<T> {
         public BeanItem<?> getSavedItem() {
             return savedItem;
         }
-        
+
         public Object getBean() {
             return savedItem.getBean();
         }

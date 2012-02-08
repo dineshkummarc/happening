@@ -72,6 +72,15 @@ public interface Domain {
             Map<String, Object> parameters, int max);
 
     /**
+     * Count the number of results for a given query
+     * 
+     * @param queryStr
+     * @param parameters
+     * @return
+     */
+    public <A extends AbstractEntity> long count(Class<A> clazz);
+
+    /**
      * Find a single entity of type using a custom query and query parameters.s
      * 
      * @param queryStr
@@ -123,5 +132,4 @@ public interface Domain {
      * @return
      */
     public long count(String queryStr, Map<String, Object> parameters);
-
 }

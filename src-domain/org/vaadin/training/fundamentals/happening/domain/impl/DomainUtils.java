@@ -42,7 +42,7 @@ public class DomainUtils {
      * @throws NoSuchAlgorithmException
      * @throws UnsupportedEncodingException
      */
-    static String hash(String secret, String salt)
+    public static String hash(String secret, String salt)
             throws NoSuchAlgorithmException, UnsupportedEncodingException {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         md.update(secret.getBytes("UTF-8"));
@@ -74,10 +74,9 @@ public class DomainUtils {
      * 
      * @return
      */
-    public static DomainUser createUser() {
+    public static DomainUser createUser(String password) {
         DomainUser user = new DomainUser();
         String salt = DomainUtils.newRandomUUIDString();
-        String password = DomainUtils.newRandomUUIDString();
         user.setSalt(salt);
         try {
             user.setHash(hash(password, salt));

@@ -17,6 +17,7 @@
 package org.vaadin.training.fundamentals.happening.domain.impl;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -167,8 +168,26 @@ class DefaultDomain implements Domain {
 
     @Override
     public long count(String queryStr, Map<String, Object> parameters) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        EntityManager em = getEntityManager();
+        try {
+            Query query = em.createQuery(queryStr);
+            if (parameters != null) {
+                for (String key : parameters.keySet()) {
+                    query.setParameter(key, parameters.get(key));
+                }
+            }
+            return (Long) query.getSingleResult();
+        } catch (NoResultException e) {
+            return 0;
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public <A extends AbstractEntity> long count(Class<A> clazz) {
+        return count("SELECT COUNT(e) FROM " + clazz.getSimpleName() + " e",
+                Collections.<String, Object> emptyMap());
     }
 
     private EntityManager getEntityManager() {
@@ -178,4 +197,5 @@ class DefaultDomain implements Domain {
 
         return em;
     }
+
 }

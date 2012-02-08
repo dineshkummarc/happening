@@ -50,6 +50,7 @@ public class ShowHappeningViewImpl extends GridLayout implements
     @Override
     public void init(Navigation navigation, Map<String, String> params)
             throws NotAuthenticatedException, NoAccessException {
+        setColumns(2);
         this.navigation = navigation;
         eventRouter = new EventRouter();
         setSizeFull();

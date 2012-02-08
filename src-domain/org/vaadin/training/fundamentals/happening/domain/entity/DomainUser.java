@@ -19,9 +19,11 @@ package org.vaadin.training.fundamentals.happening.domain.entity;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotNull;
 
 @Entity
 public class DomainUser extends AbstractEntity {
@@ -29,6 +31,9 @@ public class DomainUser extends AbstractEntity {
     private String salt;
     private String name;
     private String picture;
+
+    @NotNull
+    @Column(unique = true)
     private String accountId;
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
     private Set<Happening> happenings = new HashSet<Happening>();
@@ -80,6 +85,5 @@ public class DomainUser extends AbstractEntity {
     public void setSalt(String salt) {
         this.salt = salt;
     }
-    
-    
-}    
+
+}
